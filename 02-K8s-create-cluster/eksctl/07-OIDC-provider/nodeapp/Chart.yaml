@@ -1,0 +1,11 @@
+apiVersion: v2
+appVersion: 1.16.0
+dependencies:
+- condition: mongodb.enabled
+  name: mongodb
+  repository: https://thedevopsstore.github.io/lwplabs-charts/
+  version: 0.1.2
+description: A Helm chart for NodeJs Application
+name: nodeapp
+type: application
+version: 0.1.3

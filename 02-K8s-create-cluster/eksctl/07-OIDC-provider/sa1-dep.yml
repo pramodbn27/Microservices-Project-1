@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp4-deployment
+spec:
+  replicas: 6
+  selector:
+    matchLabels:
+      app: myapp3
+  template: 
+    metadata: # Dictionary
+      name: myapp3-pod
+      labels: # Dictionary 
+        app: myapp3         
+    spec:
+      containers: # List
+        - name: myapp3-container
+          image: nginx
+          ports:
+            - containerPort: 80

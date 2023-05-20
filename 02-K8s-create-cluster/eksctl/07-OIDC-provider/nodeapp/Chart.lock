@@ -1,0 +1,6 @@
+dependencies:
+- name: mongodb
+  repository: https://thedevopsstore.github.io/lwplabs-charts/
+  version: 0.1.2
+digest: sha256:3095759958cdf317b72f99e3dbbe9cabf7ba58adec9d2613c622a6b9b9a7d456
+generated: "2022-08-23T00:21:14.53948-04:00"
