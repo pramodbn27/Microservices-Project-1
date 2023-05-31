@@ -1,0 +1,22 @@
+global:
+  licenseKey: ecfe50cbde443b2aec9db9f52a8e96473b31NRAL
+  cluster: eks-cluster
+
+prometheus:
+  # Automatically scrape prometheus metrics for annotated services in the cluster
+  # Collecting prometheus metrics for large clusters might impact data usage significantly
+  enabled: true
+  lowDataMode: true  # Skip ingesting cluster-level metrics
+webhook:
+  # Deploy our webhook to link APM and Kubernetes entities
+  enabled: true
+kubeEvents:
+  # Report Kubernetes events
+  enabled: true
+logging:
+  # Report logs for containers running in the cluster
+  enabled: true
+ksm:
+  # Deploy kube-state-metrics in the cluster.
+  # Set this to true unless it is already deployed.
+  enabled: true

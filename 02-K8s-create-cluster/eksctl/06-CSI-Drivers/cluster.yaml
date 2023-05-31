@@ -1,0 +1,18 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: ek-cluster
+  region: us-east-2
+  version: "1.21"
+
+managedNodeGroups:
+  - name: eks-node-group
+    instanceType: t2.medium
+    desiredCapacity: 1
+    iam:
+      withAddonPolicies:
+        ebs: true
+        efs: true
+    ssh: # import public key from file
+      publicKeyPath: mykey.pub
