@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dev-myapp3-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: dev-myapp3
+  template: 
+    metadata: # Dictionary
+      name: myapp3-pod
+      labels: # Dictionary 
+        app: dev-myapp3         
+    spec:
+      containers: # List
+        - name: myapp3-container
+          image: nginx
+          ports:
+            - containerPort: 80
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dev-myapp3-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: dev-myapp3
+  template: 
+    metadata: # Dictionary
+      name: myapp3-pod
+      labels: # Dictionary 
+        app: dev-myapp3         
+    spec:
+      containers: # List
+        - name: myapp3-container
+          image: nginx
+          ports:
+            - containerPort: 80
+    
