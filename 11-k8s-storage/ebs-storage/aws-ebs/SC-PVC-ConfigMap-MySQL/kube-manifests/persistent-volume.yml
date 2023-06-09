@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: ebs-mysql-pv
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: ebs-sc
+  csi:
+    driver: ebs.csi.aws.com
+    fsType: ext4
+  volumeMode: Filesystem
