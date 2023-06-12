@@ -1,0 +1,141 @@
+---
+# Source: wordpress/charts/mariadb/templates/secrets.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: dev-hr-mariadb
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: mariadb
+    helm.sh/chart: mariadb-10.4.2
+    app.kubernetes.io/instance: dev-hr
+    app.kubernetes.io/managed-by: Helm
+type: Opaque
+data:
+  mariadb-root-password: "NnRXT09TMDlkQg=="
+  mariadb-password: "M3RETGZsM0E2Mw=="
+---
+---
+# Source: wordpress/charts/mariadb/templates/primary/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dev-hr-mariadb
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: mariadb
+    helm.sh/chart: mariadb-10.4.2
+    app.kubernetes.io/instance: dev-hr
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: primary
+data:
+  my.cnf: |-
+    [mysqld]
+    skip-name-resolve
+    explicit_defaults_for_timestamp
+    basedir=/opt/bitnami/mariadb
+    plugin_dir=/opt/bitnami/mariadb/plugin
+    port=3306
+    socket=/opt/bitnami/mariadb/tmp/mysql.sock
+    tmpdir=/opt/bitnami/mariadb/tmp
+    max_allowed_packet=16M
+    bind-address=::
+    pid-file=/opt/bitnami/mariadb/tmp/mysqld.pid
+    log-error=/opt/bitnami/mariadb/logs/mysqld.log
+    character-set-server=UTF8
+    collation-server=utf8_general_ci
+    
+    [client]
+    port=3306
+    socket=/opt/bitnami/mariadb/tmp/mysql.sock
+    default-character-set=UTF8
+    plugin_dir=/opt/bitnami/mariadb/plugin
+    
+    [manager]
+    port=3306
+    socket=/opt/bitnami/mariadb/tmp/mysql.sock
+    pid-file=/opt/bitnami/mariadb/tmp/mysqld.pid
+---
+# Source: wordpress/charts/mariadb/templates/primary/svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: dev-hr-mariadb
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: mariadb
+    helm.sh/chart: mariadb-10.4.2
+    app.kubernetes.io/instance: dev-hr
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: primary
+  annotations:
+spec:
+  type: ClusterIP
+  sessionAffinity: None
+  ports:
+    - name: mysql
+      port: 3306
+      protocol: TCP
+      targetPort: mysql
+      nodePort: null
+  selector: 
+    app.kubernetes.io/name: mariadb
+    app.kubernetes.io/instance: dev-hr
+    app.kubernetes.io/component: primary
+---
+# Source: wordpress/charts/mariadb/templates/primary/statefulset.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dev-hr-mariadb
+  namespace: default
+  labels:
+    app.kubernetes.io/name: mariadb
+    helm.sh/chart: mariadb-10.4.2
+    app.kubernetes.io/instance: dev-hr
+spec:
+  replicas: 1
+  selector:
+    matchLabels: 
+      app.kubernetes.io/name: mariadb
+      app.kubernetes.io/instance: dev-hr
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: mariadb
+        helm.sh/chart: mariadb-10.4.2
+        app.kubernetes.io/instance: dev-hr
+    spec:
+      containers:
+        - name: mariadb
+          image: docker.io/bitnami/mariadb:10.5.15-debian-10-r30
+          imagePullPolicy: "IfNotPresent"
+          env:
+            - name: MARIADB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dev-hr-mariadb
+                  key: mariadb-root-password
+            - name: MARIADB_USER
+              value: "bn_wordpress"
+            - name: MARIADB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dev-hr-mariadb
+                  key: mariadb-password
+            - name: MARIADB_DATABASE
+              value: "wordpress"
+          ports:
+            - name: mysql
+              containerPort: 3306
+          resources: 
+            limits: {}
+            requests: {}
+          volumeMounts:
+            - name: config
+              mountPath: /opt/bitnami/mariadb/conf/my.cnf
+              subPath: my.cnf
+      volumes:
+        - name: config
+          configMap:
+            name: dev-hr-mariadb
