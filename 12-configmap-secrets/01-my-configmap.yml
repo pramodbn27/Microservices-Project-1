@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: my-configmap
+data:
+  key1: Hello, world!
+  key2: |
+    Test
+    multiple lines
+    more lines
