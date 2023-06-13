@@ -1,0 +1,16 @@
+# Source: drupal/templates/pvc.yaml
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: dev-drupal-drupal
+  labels:
+    app.kubernetes.io/name: drupal
+    helm.sh/chart: drupal-11.0.21
+    app.kubernetes.io/instance: dev-drupal
+    app.kubernetes.io/managed-by: Helm
+spec:
+  accessModes:
+    - "ReadWriteOnce"
+  resources:
+    requests:
+      storage: "8Gi"
