@@ -1,0 +1,24 @@
+# Source: drupal/templates/svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: dev-drupal
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: drupal
+    helm.sh/chart: drupal-11.0.21
+    app.kubernetes.io/instance: dev-drupal
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+spec:
+  type: NodePort
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+    - name: https
+      port: 443
+      targetPort: https
+  selector:
+    app.kubernetes.io/name: drupal
+    app.kubernetes.io/instance: dev-drupal
