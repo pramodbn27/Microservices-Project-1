@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: dev-wordpress-mariadb
+  namespace: "hr"
+  labels:
+    app.kubernetes.io/name: mariadb
+    app.kubernetes.io/instance: dev-wordpress
+  annotations:
+spec:
+  type: ClusterIP
+  ports:
+    - name: mysql
+      port: 3306
+      protocol: TCP
+      targetPort: mysql
+      nodePort: null
+  selector: 
+    app.kubernetes.io/name: mariadb
+    app.kubernetes.io/instance: dev-wordpress

@@ -1,0 +1,124 @@
+# Source: wordpress/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dev-wordpress
+  namespace: "hr"
+  labels:
+    app.kubernetes.io/name: wordpress
+    app.kubernetes.io/instance: dev-wordpress
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: wordpress
+      app.kubernetes.io/instance: dev-wordpress
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: wordpress
+        app.kubernetes.io/instance: dev-wordpress
+    spec:
+      securityContext:
+        fsGroup: 1001
+      containers:
+        - name: wordpress
+          image: docker.io/bitnami/wordpress:5.9.2-debian-10-r9
+          imagePullPolicy: "IfNotPresent"
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1001
+          env:
+            - name: BITNAMI_DEBUG
+              value: "false"
+            - name: ALLOW_EMPTY_PASSWORD
+              value: "yes"
+            - name: MARIADB_HOST
+              value: "dev-wordpress-mariadb"
+            - name: MARIADB_PORT_NUMBER
+              value: "3306"
+            - name: WORDPRESS_DATABASE_NAME
+              value: "bitnami_wordpress"
+            - name: WORDPRESS_DATABASE_USER
+              value: "bn_wordpress"
+            - name: WORDPRESS_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dev-wordpress-mariadb
+                  key: mariadb-password
+            - name: WORDPRESS_USERNAME
+              value: "user"
+            - name: WORDPRESS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dev-wordpress
+                  key: wordpress-password
+            - name: WORDPRESS_EMAIL
+              value: "user@example.com"
+            - name: WORDPRESS_FIRST_NAME
+              value: "FirstName"
+            - name: WORDPRESS_LAST_NAME
+              value: "LastName"
+            - name: WORDPRESS_HTACCESS_OVERRIDE_NONE
+              value: "no"
+            - name: WORDPRESS_ENABLE_HTACCESS_PERSISTENCE
+              value: "no"
+            - name: WORDPRESS_BLOG_NAME
+              value: "User's Blog!"
+            - name: WORDPRESS_SKIP_BOOTSTRAP
+              value: "no"
+            - name: WORDPRESS_TABLE_PREFIX
+              value: "wp_"
+            - name: WORDPRESS_SCHEME
+              value: "http"
+            - name: WORDPRESS_EXTRA_WP_CONFIG_CONTENT
+              value: ""
+            - name: WORDPRESS_AUTO_UPDATE_LEVEL
+              value: "none"
+            - name: WORDPRESS_PLUGINS
+              value: "none"
+            - name: APACHE_HTTP_PORT_NUMBER
+              value: "8080"
+            - name: APACHE_HTTPS_PORT_NUMBER
+              value: "8443"
+          envFrom:
+          ports:
+            - name: http
+              containerPort: 8080
+            - name: https
+              containerPort: 8443
+          livenessProbe:
+            failureThreshold: 6
+            httpGet:
+              httpHeaders: []
+              path: /wp-admin/install.php
+              port: 'http'
+              scheme: 'HTTP'
+            initialDelaySeconds: 120
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          readinessProbe:
+            failureThreshold: 6
+            httpGet:
+              httpHeaders: []
+              path: /wp-login.php
+              port: 'http'
+              scheme: 'HTTP'
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          resources:
+            limits: {}
+            requests:
+              cpu: 300m
+              memory: 512Mi
+          volumeMounts:
+            - mountPath: /bitnami/wordpress
+              name: wordpress-data
+              subPath: wordpress
+      volumes:
+        - name: wordpress-data
+          persistentVolumeClaim:
+            claimName: dev-wordpress
