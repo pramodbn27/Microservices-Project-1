@@ -1,0 +1,15 @@
+# Source: wordpress/templates/pvc.yaml
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: dev-wordpress
+  namespace: "hr"
+  labels:
+    app.kubernetes.io/name: wordpress
+    app.kubernetes.io/instance: dev-wordpress
+spec:
+  accessModes:
+    - "ReadWriteOnce"
+  resources:
+    requests:
+      storage: "10Gi"
