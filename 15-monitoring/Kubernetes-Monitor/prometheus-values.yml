@@ -1,0 +1,30 @@
+prometheus:
+  service:
+    type: NodePort
+
+
+grafana:
+  service:
+    type: NodePort
+
+
+alertmanager:
+  config:
+    global:
+      resolve_timeout: 5m
+    route:
+      group_wait: 20s
+      group_interval: 4m
+      repeat_interval: 4h
+      receiver: 'email-k8s-admin'
+      routes: []
+    receivers:
+    - name: 'email-k8s-admin'
+      email_configs:
+      - to: thedevopsstore@gmail.com
+        from: kiran@lwplabs.com
+        smarthost: smtp-relay.sendinblue.com:587
+        auth_username: thedevopsstore@gmail.com
+        auth_password: szwKqHbWRad1JCg6
+  service:
+    type: NodePort
