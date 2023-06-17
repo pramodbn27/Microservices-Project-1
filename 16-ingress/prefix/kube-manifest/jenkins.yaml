@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jenkins
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jenkins
+  template: 
+    metadata: # Dictionary
+      name: jenkins-pod
+      labels: # Dictionary 
+        app: jenkins        
+    spec:
+      containers: # List
+        - name: jenkins-container
+          image: lwplapbs/jenkins:latest
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              cpu: 10m
+              memory: 256Mi
+            limits:
+              cpu: 1000m
+              memory: 2Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jenkins-service
+spec:
+  type: LoadBalancer
+  selector: 
+    app: jenkins
+  ports: 
+    - name: http
+      port: 80
+      targetPort: 8080

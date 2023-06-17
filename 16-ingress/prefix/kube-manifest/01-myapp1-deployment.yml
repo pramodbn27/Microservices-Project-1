@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: myapp1
+  template: 
+    metadata: # Dictionary
+      name: myapp1-pod
+      labels: # Dictionary 
+        app: myapp1        
+    spec:
+      containers: # List
+        - name: myapp1-container
+          image: lwplapbs/myapp:16
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: 10m
+              memory: 256Mi
+            limits:
+              cpu: 1000m
+              memory: 2Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp1-service
+spec:
+  type: ClusterIP 
+  selector: 
+    app: myapp1
+  ports: 
+    - name: http
+      port: 80
+      targetPort: 80
+---      
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: myapp1
+  annotations:
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: "lwplabs.org"
+    http:
+      paths:
+      - path: /myapp1
+        pathType: Prefix
+        backend:
+          service:
+            name: myapp1-service
+            port:
+              number: 80
